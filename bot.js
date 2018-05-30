@@ -5,7 +5,7 @@ const bot = new Discord.Client({disableEveryone: true});
 bot.on("ready", async () => {
   console.log(`${bot.user.username} is online!`);
 
-  bot.user.setActivity("All penguin games", {type: "PLAYING"});
+  bot.user.setActivity("All penguin games")
 
   //bot.user.setGame("on SourceCade!");
 });
@@ -14,7 +14,7 @@ bot.on("message", async message => {
   if(message.author.bot) return;
   if(message.channel.type === "dm") return;
 
-  let prefix = botconfig.prefix;
+  let prefix = "!"
   let messageArray = message.content.split(" ");
   let cmd = messageArray[0];
   let args = messageArray.slice(1);
@@ -119,6 +119,26 @@ bot.on("message", async message => {
 
     return message.channel.send(serverembed);
   }
+  
+  if(cmd === `${prefix}botinfo`){
+
+    if(!message.member.hasPermission("MANAGE_MEMBERS")) return message.reply("Sorry pal, you can't do that.");
+  let rMember = message.guild.member(message.mentions.users.first()) || message.guild.members.get(args[0]);
+  if(!rMember) return message.reply("Couldn't find that user.");
+  let role = args.join(" ").slice(22);
+  if(!role) return message.reply("Specify a role!");
+  let gRole = message.guild.roles.find(`name`, role);
+  if(!gRole) return message.reply("Couldn't find that role.");
+
+  if(rMember.roles.has(gRole.id)) return message.reply("They already have that role.");
+  await(rMember.addRole(gRole.id));
+
+  try{
+    await rMember.send(`Congrats, you have been given the role ${gRole.name}`)
+  }catch(e){
+    message.channel.send(`Congrats to <@${rMember.id}>, they have been given the role ${gRole.name}. We tried to DM them, but their DMs are locked.`)
+  }
+  }
 
 
 
@@ -135,6 +155,6 @@ bot.on("message", async message => {
     return message.channel.send(botembed);
   }
 
-});
+})
 
 bot.login(process.env.BOT_TOKEN);
