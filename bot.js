@@ -1,10 +1,15 @@
-const Discord ("discord.js")
-const bot = new Discord.Client({disableEveryone: true})
+const Discord = require('discord.js');
+const client = new Discord.Client();
 
-bot.on('message', msg => {
-  if (msg.content === '!ping') {
-    msg.reply('pong');
-  }
+client.on('ready', () => {
+    console.log('I am ready!');
 });
 
-bot.login(process.env.token)
+client.on('message', message => {
+    if (message.content === 'ping') {
+    	message.reply('pong');
+  	}
+});
+
+// THIS  MUST  BE  THIS  WAY
+client.login(process.env.BOT_TOKEN);
